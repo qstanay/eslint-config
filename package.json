@@ -1,0 +1,64 @@
+{
+  "name": "@qstanay/eslint-config",
+  "version": "1.0.0",
+  "description": "Opinionated ESLint flat config for Nuxt, Vue and TypeScript",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./nuxt": "./dist/nuxt.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "scripts": {
+    "build": "tsdown --clean --dts",
+    "dev": "tsdown --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qstanay/eslint-config.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qstanay/eslint-config/issues"
+  },
+  "homepage": "https://github.com/qstanay/eslint-config#readme",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "eslint": "^9.0.0 || ^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@nuxt/eslint-plugin": "^1.16.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint-config-flat-gitignore": "^2.3.0",
+    "eslint-flat-config-utils": "^3.2.0",
+    "eslint-plugin-import-x": "^4.0.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "eslint-processor-vue-blocks": "^2.0.0",
+    "globals": "^17.0.0",
+    "local-pkg": "^1.2.0",
+    "vue-eslint-parser": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "eslint": "^10.7.0",
+    "jiti": "^2.5.1",
+    "tsdown": "^0.22.7",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  }
+}
