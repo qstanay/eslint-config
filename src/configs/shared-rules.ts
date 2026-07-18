@@ -1,8 +1,7 @@
 import type { Linter } from 'eslint';
 
-export function sharedRules(): Linter.RulesRecord {
+export function javascriptRules(): Linter.RulesRecord {
   return {
-    // JavaScript logic
     'no-console': ['error', { allow: ['warn', 'error'] }],
     'no-debugger': 'error',
     'eqeqeq': ['error', 'always'],
@@ -10,8 +9,11 @@ export function sharedRules(): Linter.RulesRecord {
     'prefer-template': 'error',
     'curly': ['error', 'all'],
     'arrow-body-style': ['error', 'as-needed'],
+  };
+}
 
-    // TypeScript logic
+export function typescriptRules(): Linter.RulesRecord {
+  return {
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
@@ -39,5 +41,17 @@ export function sharedRules(): Linter.RulesRecord {
         ignoreReadonlyClassProperties: true,
       },
     ],
+  };
+}
+
+/**
+ * Shared opinionated rules.
+ * TypeScript rules are included only when `typescript` is true,
+ * so JS-only projects do not reference a missing plugin.
+ */
+export function sharedRules(options: { typescript?: boolean } = {}): Linter.RulesRecord {
+  return {
+    ...javascriptRules(),
+    ...(options.typescript ? typescriptRules() : {}),
   };
 }

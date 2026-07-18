@@ -1,6 +1,6 @@
 {
   "name": "@qstanay/eslint-config",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Opinionated ESLint flat config for Nuxt, Vue and TypeScript",
   "type": "module",
   "exports": {
@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -48,7 +49,6 @@
     "eslint-flat-config-utils": "^3.2.0",
     "eslint-plugin-import-x": "^4.0.0",
     "eslint-plugin-vue": "^10.0.0",
-    "eslint-processor-vue-blocks": "^2.0.0",
     "globals": "^17.0.0",
     "local-pkg": "^1.2.0",
     "vue-eslint-parser": "^10.0.0"

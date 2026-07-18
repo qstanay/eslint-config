@@ -1,42 +1,57 @@
+import type { Linter } from 'eslint';
+
 import type { StylisticOptions, TypedFlatConfigItem } from './types';
 
 import { sharedRules } from './configs/shared-rules';
-import { imports } from './configs/imports';
-import { nuxt as nuxtConfig } from './configs/nuxt';
 import { stylistic as stylisticConfig } from './configs/stylistic';
-import { typescript as typescriptConfig } from './configs/typescript';
-import { vue as vueConfig } from './configs/vue';
+import { vueRules } from './configs/vue-rules';
+import { resolveStylisticOptions, SOURCE_FILES, VUE_FILES } from './utils';
 
 export interface NuxtPresetOptions {
   stylistic?: boolean | StylisticOptions;
-  overrides?: Record<string, unknown>;
+  overrides?: Linter.RulesRecord;
 }
 
+/**
+ * Opinionated layer for Nuxt apps.
+ *
+ * Intended to be used with `@nuxt/eslint` + `withNuxt()`:
+ * Nuxt already provides TypeScript/Vue/import plugins, so this preset
+ * only adds stylistic formatting and shared opinionated rules.
+ */
 export function nuxt(options: NuxtPresetOptions = {}) {
-  const stylisticOptions = options.stylistic === false
-    ? false
-    : typeof options.stylistic === 'object'
-      ? options.stylistic
-      : {};
-
-  const configs: Promise<TypedFlatConfigItem[]>[] = [
-    typescriptConfig(),
-    imports(),
-    vueConfig(),
-    nuxtConfig(),
-    Promise.resolve([
-      {
-        name: 'qstanay/nuxt/shared-rules',
-        files: ['**/*.{js,jsx,ts,tsx,cts,mts,vue}'],
-        rules: {
-          ...sharedRules(),
-        },
-      },
-    ]),
-  ];
+  const stylisticOptions = resolveStylisticOptions(options.stylistic);
+  const configs: Promise<TypedFlatConfigItem[]>[] = [];
 
   if (stylisticOptions) {
-    configs.unshift(stylisticConfig(stylisticOptions));
+    configs.push(stylisticConfig(stylisticOptions));
+  }
+
+  configs.push(Promise.resolve([
+    {
+      name: 'qstanay/nuxt/shared-rules',
+      files: [...SOURCE_FILES],
+      // Host (@nuxt/eslint) registers @typescript-eslint; include TS rules.
+      rules: sharedRules({ typescript: true }),
+    },
+    {
+      name: 'qstanay/nuxt/vue-rules',
+      files: [...VUE_FILES],
+      rules: {
+        ...vueRules(),
+      },
+    },
+  ]));
+
+  if (options.overrides) {
+    // Dedicated trailing block so overrides always win over vue/shared rules.
+    configs.push(Promise.resolve([
+      {
+        name: 'qstanay/nuxt/overrides',
+        files: [...SOURCE_FILES],
+        rules: options.overrides,
+      },
+    ]));
   }
 
   return configs;

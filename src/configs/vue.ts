@@ -1,19 +1,33 @@
 import type { TypedFlatConfigItem } from '../types';
 
+import { VUE_FILES } from '../utils';
+import { vueRules } from './vue-rules';
+
+/**
+ * Vue layer based on the official flat recommended preset.
+ * Must spread the full array — it includes setup, processor, and rule packs.
+ */
 export async function vue(): Promise<TypedFlatConfigItem[]> {
   const vuePluginMod = await import('eslint-plugin-vue');
-  const vueParserMod = await import('vue-eslint-parser');
+  const globalsMod = await import('globals');
 
   const vuePlugin = (vuePluginMod as any).default ?? vuePluginMod;
-  const vueParser = (vueParserMod as any).default ?? vueParserMod;
+  const globals = (globalsMod as any).default ?? globalsMod;
+
+  const recommended = (vuePlugin.configs?.['flat/recommended'] ?? []) as TypedFlatConfigItem[];
 
   return [
+    ...recommended,
     {
-      name: 'qstanay/vue',
-      files: ['**/*.vue'],
+      name: 'qstanay/vue/rules',
+      files: [...VUE_FILES],
       languageOptions: {
-        parser: vueParser,
+        globals: {
+          ...globals.browser,
+        },
         parserOptions: {
+          // Keep vue-eslint-parser as the root parser (from recommended),
+          // and parse <script lang="ts"> with the TS parser.
           parser: {
             ts: '@typescript-eslint/parser',
             js: 'espree',
@@ -23,25 +37,8 @@ export async function vue(): Promise<TypedFlatConfigItem[]> {
           extraFileExtensions: ['.vue'],
         },
       },
-      plugins: {
-        vue: vuePlugin,
-      },
       rules: {
-        ...(vuePlugin.configs?.['flat/recommended']?.[0]?.rules ?? {}),
-        'vue/html-self-closing': [
-          'error',
-          {
-            html: {
-              void: 'always',
-              normal: 'always',
-              component: 'always',
-            },
-            svg: 'always',
-            math: 'always',
-          },
-        ],
-        'vue/attributes-order': 'error',
-        'vue/padding-line-between-tags': 'error',
+        ...vueRules(),
       },
     },
   ];

@@ -1,7 +1,7 @@
 import type { Awaitable, OptionsConfig, TypedFlatConfigItem } from './types';
 
 import { FlatConfigComposer } from 'eslint-flat-config-utils';
-import { has, resolveEnabled } from './utils';
+import { has, resolveEnabled, resolveStylisticOptions, SOURCE_FILES } from './utils';
 import { ignores } from './configs/ignores';
 import { sharedRules } from './configs/shared-rules';
 import { imports } from './configs/imports';
@@ -20,12 +20,7 @@ export function defineConfig(
   const enableTs = resolveEnabled(options.typescript, has('typescript'));
   const enableVue = resolveEnabled(options.vue, has('vue') || has('nuxt'));
   const enableNuxt = resolveEnabled(options.nuxt, has('nuxt'));
-
-  const stylisticOptions = options.stylistic === false
-    ? false
-    : typeof options.stylistic === 'object'
-      ? options.stylistic
-      : {};
+  const stylisticOptions = resolveStylisticOptions(options.stylistic);
 
   const configs: (Awaitable<TypedFlatConfigItem[]>)[] = [];
 
@@ -52,13 +47,21 @@ export function defineConfig(
   configs.push(Promise.resolve([
     {
       name: 'qstanay/shared-rules',
-      rules: {
-        ...sharedRules(),
-        ...(options.overrides ?? {}),
-      },
-      files: ['**/*.{js,jsx,ts,tsx,cts,mts,vue}'],
+      files: [...SOURCE_FILES],
+      rules: sharedRules({ typescript: enableTs }),
     },
   ]));
+
+  if (options.overrides) {
+    // Trailing block so project overrides win over shared/vue/ts packs.
+    configs.push(Promise.resolve([
+      {
+        name: 'qstanay/overrides',
+        files: [...SOURCE_FILES],
+        rules: options.overrides,
+      },
+    ]));
+  }
 
   const composer = new FlatConfigComposer<TypedFlatConfigItem>();
   composer.append(...configs, ...userConfigs as any);
