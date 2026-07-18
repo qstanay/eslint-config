@@ -14,6 +14,18 @@ Formatting is handled by ESLint via **@stylistic** (`eslint --fix`). Do **not** 
 
 For Nuxt, prefer the `/nuxt` entry. It only adds opinionated rules + formatting on top of Nuxt's own TypeScript/Vue setup. It does **not** replace `@nuxt/eslint`.
 
+## When to use this
+
+Use this preset when you want a **small, Nuxt/Vue/TypeScript-focused** flat config with lint + format in one toolchain (`eslint --fix` via `@stylistic`), without Prettier.
+
+How it differs from common alternatives:
+
+- **vs `@antfu/eslint-config`** — narrower scope. No JSON/YAML/Markdown/CSS formatters, no React/Next/Svelte/Astro stack. Keeps standard rule prefixes (`@typescript-eslint/*`, `import/*`) and defaults to semicolons + single quotes + 2-space indent. Includes a dedicated Nuxt layer for `@nuxt/eslint` + `withNuxt()`.
+- **vs Prettier (+ eslint-config-prettier)** — formatting lives in ESLint/Stylistic. Do not run both unless you set `stylistic: false`.
+- **vs using `@nuxt/eslint` alone** — Nuxt already gives project-aware Vue/TS setup; this package adds opinionated shared rules and stylistic formatting on top.
+
+If you need a wide multi-framework “batteries included” preset, prefer something like `@antfu/eslint-config`. If you mainly ship Nuxt/Vue/TS apps and want a predictable thin layer, use this.
+
 ## Requirements
 
 - Node.js 18+
