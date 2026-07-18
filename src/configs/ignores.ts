@@ -1,6 +1,6 @@
-import type { TypedFlatConfigItem } from '../types';
-
 import gitignore from 'eslint-config-flat-gitignore';
+
+import type { TypedFlatConfigItem } from '../types';
 
 export function ignores(extraIgnores: string[] = []): TypedFlatConfigItem[] {
   return [

@@ -1,7 +1,7 @@
-import type { TypedFlatConfigItem } from '../types';
-
 import { VUE_FILES } from '../utils';
 import { vueRules } from './vue-rules';
+
+import type { TypedFlatConfigItem } from '../types';
 
 /**
  * Vue layer based on the official flat recommended preset.

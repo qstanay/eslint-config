@@ -28,6 +28,42 @@ describe('defineConfig()', () => {
     expect(configs.length).toBeGreaterThan(0);
   });
 
+  it('includes @eslint/js recommended and import/order', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: false,
+    });
+    const javascript = findByName(configs, 'qstanay/javascript');
+    expect(javascript).toBeTruthy();
+    expect(javascript.rules?.['no-with']).toBe('error');
+
+    const imports = findByName(configs, 'qstanay/imports');
+    expect(imports.rules?.['import/order']).toBeTruthy();
+  });
+
+  it('keeps no-magic-numbers off unless strict is enabled', async () => {
+    const defaultConfigs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+    });
+    const shared = findByName(defaultConfigs, 'qstanay/shared-rules');
+    expect(shared.rules['@typescript-eslint/no-magic-numbers']).toBeUndefined();
+
+    const strictConfigs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+      strict: true,
+    });
+    const strictShared = findByName(strictConfigs, 'qstanay/shared-rules');
+    expect(strictShared.rules['@typescript-eslint/no-magic-numbers']).toBeTruthy();
+  });
+
   it('does not include vue plugin when vue: false', async () => {
     const configs = await defineConfig({
       stylistic: false,
@@ -159,5 +195,16 @@ describe('nuxt() preset', () => {
     const overridesIndex = resolved.findIndex((c: any) => c?.name === 'qstanay/nuxt/overrides');
     expect(overridesIndex).toBeGreaterThan(vueIndex);
     expect(findByName(resolved, 'qstanay/nuxt/overrides').rules['vue/html-self-closing']).toBe('off');
+  });
+
+  it('supports extra ignores', async () => {
+    const resolved = (await Promise.all(nuxtPreset({
+      stylistic: false,
+      ignores: ['**/tmp/**'],
+    }))).flat();
+
+    const ignoreBlock = findByName(resolved, 'qstanay/ignores');
+    expect(ignoreBlock).toBeTruthy();
+    expect(ignoreBlock.ignores).toContain('**/tmp/**');
   });
 });

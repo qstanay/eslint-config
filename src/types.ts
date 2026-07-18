@@ -24,6 +24,11 @@ export interface OptionsConfig {
    * Enable TypeScript rules when `typescript` is installed unless explicitly set.
    */
   typescript?: boolean;
+  /**
+   * Enable stricter opinionated TypeScript rules (e.g. `no-magic-numbers`).
+   * Off by default to keep app/UI code quiet.
+   */
+  strict?: boolean;
   stylistic?: boolean | StylisticOptions;
   /**
    * Extra ignores appended to defaults.

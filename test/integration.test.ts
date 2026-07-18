@@ -5,9 +5,9 @@ import { concat } from 'eslint-flat-config-utils';
 import { describe, expect, it } from 'vitest';
 
 import { defineConfig } from '../src';
+import { lintFiles, ruleIds } from './utils';
 import { typescript as typescriptConfig } from '../src/configs/typescript';
 import { nuxt as nuxtPreset } from '../src/nuxt';
-import { lintFiles, ruleIds } from './utils';
 
 const fixturesRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures');
 

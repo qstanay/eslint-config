@@ -1,6 +1,6 @@
 {
   "name": "@qstanay/eslint-config",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Opinionated ESLint flat config for Nuxt, Vue and TypeScript",
   "type": "module",
   "exports": {
@@ -22,7 +22,16 @@
     "type": "git",
     "url": "git+https://github.com/qstanay/eslint-config.git"
   },
-  "keywords": [],
+  "keywords": [
+    "eslint",
+    "eslint-config",
+    "eslintconfig",
+    "flat-config",
+    "nuxt",
+    "vue",
+    "typescript",
+    "stylistic"
+  ],
   "author": "",
   "license": "MIT",
   "bugs": {
@@ -30,7 +39,8 @@
   },
   "homepage": "https://github.com/qstanay/eslint-config#readme",
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0"
@@ -41,6 +51,7 @@
     }
   },
   "dependencies": {
+    "@eslint/js": "^10.0.1",
     "@nuxt/eslint-plugin": "^1.16.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",

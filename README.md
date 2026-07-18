@@ -125,6 +125,7 @@ Main entry for Vue / TypeScript projects.
 | `vue` | `boolean` | auto (`vue` or `nuxt` installed) | Enable Vue rules |
 | `typescript` | `boolean` | auto (`typescript` installed) | Enable TypeScript rules |
 | `nuxt` | `boolean` | auto (`nuxt` installed) | Enable Nuxt plugin rule(s). Prefer `/nuxt` for Nuxt apps |
+| `strict` | `boolean` | `false` | Stricter TS rules (e.g. `no-magic-numbers`) |
 | `stylistic` | `false \| object` | enabled | Formatting rules (see below) |
 | `overrides` | `Linter.RulesRecord` | `{}` | Custom rules merged last over shared rules |
 | `ignores` | `string[]` | `[]` | Extra ignore globs |
@@ -150,7 +151,9 @@ Layer for Nuxt apps used with `withNuxt(...nuxt())`.
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `stylistic` | `false \| object` | enabled | Formatting rules (see below) |
+| `strict` | `boolean` | `false` | Stricter TS rules (e.g. `no-magic-numbers`) |
 | `overrides` | `Linter.RulesRecord` | `{}` | Custom rules merged last over shared rules |
+| `ignores` | `string[]` | `[]` | Extra ignore globs (plus defaults / `.gitignore`) |
 
 There are no `vue` / `typescript` flags here — `@nuxt/eslint` already provides that stack. This preset adds shared opinionated rules, Vue opinionated rules, and stylistic formatting.
 
@@ -205,9 +208,12 @@ Built-in ignores cover `node_modules`, `dist`, `.output`, `.nuxt`, `.nitro`, `co
 defineConfig({
   ignores: ['**/fixtures/**'],
 })
-```
 
-`ignores` is only on `defineConfig`, not on the Nuxt preset (use Nuxt / ESLint ignore mechanisms there if needed).
+// Nuxt:
+nuxt({
+  ignores: ['**/fixtures/**'],
+})
+```
 
 ## Prettier
 
@@ -263,11 +269,13 @@ Disable Prettier for the same file types (or uninstall / disable the Prettier ex
 
 ## What this preset enforces (high level)
 
-- Shared JS rules always; TypeScript opinionated rules only when TypeScript is enabled (so JS-only projects stay valid)
-- Official `eslint-plugin-vue` `flat/recommended` when Vue is enabled, plus a small opinionated Vue layer (self-closing tags, attribute order, padding between tags)
+- `@eslint/js` recommended as the JS baseline in `defineConfig()`
+- Shared opinionated JS rules always; TypeScript opinionated rules only when TypeScript is enabled
+- Official `eslint-plugin-vue` `flat/recommended` when Vue is enabled, plus a small opinionated Vue layer
 - Stylistic formatting via `@stylistic` (rule namespace: `style/*`)
-- Import hygiene via `eslint-plugin-import-x` in `defineConfig` (Nuxt relies on `@nuxt/eslint` for its own import/TS/Vue stack)
+- Import hygiene + autofixable `import/order` via `eslint-plugin-import-x` in `defineConfig` (Nuxt relies on `@nuxt/eslint` for its own import/TS/Vue stack)
 - `overrides` are applied in a trailing config block so they win over shared/Vue rules
+- Optional `strict: true` for noisier TypeScript checks like `no-magic-numbers`
 
 ## Agent / setup checklist
 

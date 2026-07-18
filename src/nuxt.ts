@@ -1,15 +1,23 @@
-import type { Linter } from 'eslint';
-
-import type { StylisticOptions, TypedFlatConfigItem } from './types';
-
+import { ignores } from './configs/ignores';
 import { sharedRules } from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
 import { vueRules } from './configs/vue-rules';
 import { resolveStylisticOptions, SOURCE_FILES, VUE_FILES } from './utils';
 
+import type { StylisticOptions, TypedFlatConfigItem } from './types';
+import type { Linter } from 'eslint';
+
 export interface NuxtPresetOptions {
   stylistic?: boolean | StylisticOptions;
+  /**
+   * Enable stricter opinionated TypeScript rules (e.g. `no-magic-numbers`).
+   */
+  strict?: boolean;
   overrides?: Linter.RulesRecord;
+  /**
+   * Extra ignores appended to defaults / `.gitignore`.
+   */
+  ignores?: string[];
 }
 
 /**
@@ -21,7 +29,9 @@ export interface NuxtPresetOptions {
  */
 export function nuxt(options: NuxtPresetOptions = {}) {
   const stylisticOptions = resolveStylisticOptions(options.stylistic);
-  const configs: Promise<TypedFlatConfigItem[]>[] = [];
+  const configs: Promise<TypedFlatConfigItem[]>[] = [
+    Promise.resolve(ignores(options.ignores)),
+  ];
 
   if (stylisticOptions) {
     configs.push(stylisticConfig(stylisticOptions));
@@ -32,7 +42,10 @@ export function nuxt(options: NuxtPresetOptions = {}) {
       name: 'qstanay/nuxt/shared-rules',
       files: [...SOURCE_FILES],
       // Host (@nuxt/eslint) registers @typescript-eslint; include TS rules.
-      rules: sharedRules({ typescript: true }),
+      rules: sharedRules({
+        typescript: true,
+        strict: options.strict,
+      }),
     },
     {
       name: 'qstanay/nuxt/vue-rules',

@@ -12,8 +12,12 @@ export function javascriptRules(): Linter.RulesRecord {
   };
 }
 
-export function typescriptRules(): Linter.RulesRecord {
-  return {
+export function typescriptRules(options: { strict?: boolean } = {}): Linter.RulesRecord {
+  const rules: Linter.RulesRecord = {
+    // Disable base rules that conflict with TypeScript-aware variants.
+    'no-unused-vars': 'off',
+    'no-undef': 'off',
+
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
@@ -30,7 +34,10 @@ export function typescriptRules(): Linter.RulesRecord {
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-non-null-assertion': 'error',
     '@typescript-eslint/no-empty-function': ['error', { allow: ['arrowFunctions'] }],
-    '@typescript-eslint/no-magic-numbers': [
+  };
+
+  if (options.strict) {
+    rules['@typescript-eslint/no-magic-numbers'] = [
       'warn',
       {
         ignore: [-1, 0, 1, 2, 1000],
@@ -40,8 +47,10 @@ export function typescriptRules(): Linter.RulesRecord {
         ignoreClassFieldInitialValues: true,
         ignoreReadonlyClassProperties: true,
       },
-    ],
-  };
+    ];
+  }
+
+  return rules;
 }
 
 /**
@@ -49,9 +58,14 @@ export function typescriptRules(): Linter.RulesRecord {
  * TypeScript rules are included only when `typescript` is true,
  * so JS-only projects do not reference a missing plugin.
  */
-export function sharedRules(options: { typescript?: boolean } = {}): Linter.RulesRecord {
+export function sharedRules(options: {
+  typescript?: boolean;
+  strict?: boolean;
+} = {}): Linter.RulesRecord {
   return {
     ...javascriptRules(),
-    ...(options.typescript ? typescriptRules() : {}),
+    ...(options.typescript
+      ? typescriptRules({ strict: options.strict })
+      : {}),
   };
 }

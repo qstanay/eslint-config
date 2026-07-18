@@ -1,14 +1,16 @@
-import type { Awaitable, OptionsConfig, TypedFlatConfigItem } from './types';
-
 import { FlatConfigComposer } from 'eslint-flat-config-utils';
-import { has, resolveEnabled, resolveStylisticOptions, SOURCE_FILES } from './utils';
+
 import { ignores } from './configs/ignores';
-import { sharedRules } from './configs/shared-rules';
 import { imports } from './configs/imports';
+import { javascript as javascriptConfig } from './configs/javascript';
 import { nuxt as nuxtConfig } from './configs/nuxt';
+import { sharedRules } from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
 import { typescript as typescriptConfig } from './configs/typescript';
 import { vue as vueConfig } from './configs/vue';
+import { has, resolveEnabled, resolveStylisticOptions, SOURCE_FILES } from './utils';
+
+import type { Awaitable, OptionsConfig, TypedFlatConfigItem } from './types';
 
 export { nuxt } from './nuxt';
 export * from './types';
@@ -25,6 +27,7 @@ export function defineConfig(
   const configs: (Awaitable<TypedFlatConfigItem[]>)[] = [];
 
   configs.push(Promise.resolve(ignores(options.ignores)));
+  configs.push(javascriptConfig());
 
   if (enableTs) {
     configs.push(typescriptConfig());
@@ -48,7 +51,10 @@ export function defineConfig(
     {
       name: 'qstanay/shared-rules',
       files: [...SOURCE_FILES],
-      rules: sharedRules({ typescript: enableTs }),
+      rules: sharedRules({
+        typescript: enableTs,
+        strict: options.strict,
+      }),
     },
   ]));
 

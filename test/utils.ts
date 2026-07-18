@@ -1,4 +1,5 @@
 import { ESLint } from 'eslint';
+
 import type { Linter } from 'eslint';
 
 export async function lintFiles(

@@ -15,6 +15,24 @@ export async function imports(): Promise<TypedFlatConfigItem[]> {
         'import/no-duplicates': 'error',
         'import/no-mutable-exports': 'error',
         'import/no-named-default': 'error',
+        'import/order': [
+          'error',
+          {
+            'groups': [
+              'builtin',
+              'external',
+              'internal',
+              ['parent', 'sibling', 'index'],
+              'object',
+              'type',
+            ],
+            'newlines-between': 'always',
+            'alphabetize': {
+              order: 'asc',
+              caseInsensitive: true,
+            },
+          },
+        ],
       },
     },
   ];

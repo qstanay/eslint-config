@@ -1,8 +1,7 @@
-import type { Linter } from 'eslint';
+import { TYPESCRIPT_FILES } from '../utils';
 
 import type { TypedFlatConfigItem } from '../types';
-
-import { TYPESCRIPT_FILES } from '../utils';
+import type { Linter } from 'eslint';
 
 function collectRules(configs: TypedFlatConfigItem[]): Linter.RulesRecord {
   return Object.assign(

@@ -1,6 +1,6 @@
-import type { StylisticOptions } from './types';
-
 import { isPackageExists } from 'local-pkg';
+
+import type { StylisticOptions } from './types';
 
 export function resolveEnabled(explicit: boolean | undefined, detected: boolean) {
   return explicit ?? detected;
