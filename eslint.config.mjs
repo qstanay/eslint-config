@@ -1,4 +1,4 @@
-import { defineConfig } from './src/index';
+import { defineConfig } from './dist/index.mjs';
 
 export default defineConfig({
   typescript: true,
@@ -7,6 +7,5 @@ export default defineConfig({
   ignores: ['test/fixtures/**'],
   overrides: {
     '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-magic-numbers': 'off',
   },
 });
