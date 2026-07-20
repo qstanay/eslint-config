@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.0.3] - 2026-07-20
+
+### Fixed
+
+- Do not attach the TypeScript parser to `.vue` when Vue is disabled (avoids fatal parse errors)
+- Ignore `.vue` files when Vue is disabled so `eslint .` does not crash on stray SFCs
+- Apply shared rules and overrides to `.mjs` / `.cjs` (not only `.js`)
+- Declare Node + ES2022 globals in the JavaScript layer so `no-undef` no longer false-positives on `console` / `process`
+- Resolve TypeScript types for `@qstanay/eslint-config/nuxt` via package `exports`
+- Declare `typescript` as an optional peer dependency (matches existing `peerDependenciesMeta`)
+- Use an explicit options array for `vue/padding-line-between-tags`
+
+### Changed
+
+- Fill `author` and `engines.node` (`>=18`) in `package.json`
+
 ## [1.0.2] - 2026-07-18
 
 ### Added

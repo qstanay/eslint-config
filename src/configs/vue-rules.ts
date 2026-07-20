@@ -15,6 +15,15 @@ export function vueRules(): Linter.RulesRecord {
       },
     ],
     'vue/attributes-order': 'error',
-    'vue/padding-line-between-tags': 'error',
+    'vue/padding-line-between-tags': [
+      'error',
+      [
+        {
+          blankLine: 'always',
+          prev: '*',
+          next: '*',
+        },
+      ],
+    ],
   };
 }

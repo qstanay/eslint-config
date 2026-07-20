@@ -8,7 +8,13 @@ import { sharedRules } from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
 import { typescript as typescriptConfig } from './configs/typescript';
 import { vue as vueConfig } from './configs/vue';
-import { has, resolveEnabled, resolveStylisticOptions, SOURCE_FILES } from './utils';
+import {
+  has,
+  resolveEnabled,
+  resolveStylisticOptions,
+  sourceFiles,
+  VUE_FILES,
+} from './utils';
 
 import type { Awaitable, OptionsConfig, TypedFlatConfigItem } from './types';
 
@@ -23,14 +29,19 @@ export function defineConfig(
   const enableVue = resolveEnabled(options.vue, has('vue') || has('nuxt'));
   const enableNuxt = resolveEnabled(options.nuxt, has('nuxt'));
   const stylisticOptions = resolveStylisticOptions(options.stylistic);
+  const files = sourceFiles(enableVue);
 
   const configs: (Awaitable<TypedFlatConfigItem[]>)[] = [];
 
-  configs.push(Promise.resolve(ignores(options.ignores)));
+  // When Vue is off, skip SFCs entirely so espree/TS do not fatal-parse them.
+  configs.push(Promise.resolve(ignores([
+    ...(options.ignores ?? []),
+    ...(!enableVue ? VUE_FILES : []),
+  ])));
   configs.push(javascriptConfig());
 
   if (enableTs) {
-    configs.push(typescriptConfig());
+    configs.push(typescriptConfig({ vue: enableVue }));
   }
 
   configs.push(imports());
@@ -50,7 +61,7 @@ export function defineConfig(
   configs.push(Promise.resolve([
     {
       name: 'qstanay/shared-rules',
-      files: [...SOURCE_FILES],
+      files,
       rules: sharedRules({
         typescript: enableTs,
         strict: options.strict,
@@ -63,7 +74,7 @@ export function defineConfig(
     configs.push(Promise.resolve([
       {
         name: 'qstanay/overrides',
-        files: [...SOURCE_FILES],
+        files,
         rules: options.overrides,
       },
     ]));

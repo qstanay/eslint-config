@@ -28,6 +28,86 @@ describe('defineConfig()', () => {
     expect(configs.length).toBeGreaterThan(0);
   });
 
+  it('includes node/es2022 globals on the javascript layer', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: false,
+    });
+    const javascript = findByName(configs, 'qstanay/javascript');
+    expect(javascript.languageOptions?.globals?.console).toBeDefined();
+    expect(javascript.languageOptions?.globals?.process).toBeDefined();
+  });
+
+  it('scopes shared rules to mjs/cjs as well as js', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: false,
+    });
+    const shared = findByName(configs, 'qstanay/shared-rules');
+    expect(shared.files).toEqual(['**/*.{js,mjs,cjs,jsx,ts,tsx,cts,mts}']);
+  });
+
+  it('includes .vue in shared rules when vue is enabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: true,
+      nuxt: false,
+      typescript: true,
+    });
+    const shared = findByName(configs, 'qstanay/shared-rules');
+    expect(shared.files).toEqual(['**/*.{js,mjs,cjs,jsx,ts,tsx,cts,mts}', '**/*.vue']);
+  });
+
+  it('ignores .vue files when vue is disabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+    });
+    const ignoreBlock = findByName(configs, 'qstanay/ignores');
+    expect(ignoreBlock.ignores).toContain('**/*.vue');
+  });
+
+  it('does not attach typescript parser to .vue when vue is disabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+    });
+    const typescript = findByName(configs, 'qstanay/typescript');
+    expect(typescript.files).toEqual(['**/*.{ts,tsx,cts,mts}']);
+    expect(typescript.languageOptions?.parserOptions?.extraFileExtensions).toBeUndefined();
+  });
+
+  it('attaches typescript parser to .vue when vue is enabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: true,
+      nuxt: false,
+      typescript: true,
+    });
+    const typescript = findByName(configs, 'qstanay/typescript');
+    expect(typescript.files).toContain('**/*.vue');
+    expect(typescript.languageOptions?.parserOptions?.extraFileExtensions).toEqual(['.vue']);
+  });
+
+  it('uses an explicit options array for vue/padding-line-between-tags', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: true,
+      nuxt: false,
+      typescript: true,
+    });
+    const vue = findByName(configs, 'qstanay/vue/rules');
+    expect(Array.isArray(vue.rules['vue/padding-line-between-tags'])).toBe(true);
+  });
+
   it('includes @eslint/js recommended and import/order', async () => {
     const configs = await defineConfig({
       stylistic: false,

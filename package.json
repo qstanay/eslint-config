@@ -1,11 +1,17 @@
 {
   "name": "@qstanay/eslint-config",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Opinionated ESLint flat config for Nuxt, Vue and TypeScript",
   "type": "module",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./nuxt": "./dist/nuxt.mjs",
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "./nuxt": {
+      "types": "./dist/nuxt.d.mts",
+      "default": "./dist/nuxt.mjs"
+    },
     "./package.json": "./package.json"
   },
   "types": "./dist/index.d.mts",
@@ -32,18 +38,22 @@
     "typescript",
     "stylistic"
   ],
-  "author": "",
+  "author": "Denis Lapshin",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/qstanay/eslint-config/issues"
   },
   "homepage": "https://github.com/qstanay/eslint-config#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "peerDependencies": {
-    "eslint": "^9.0.0 || ^10.0.0"
+    "eslint": "^9.0.0 || ^10.0.0",
+    "typescript": ">=4.9.0"
   },
   "peerDependenciesMeta": {
     "typescript": {

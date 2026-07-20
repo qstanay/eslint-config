@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { ESLint } from 'eslint';
 import { concat } from 'eslint-flat-config-utils';
 import { describe, expect, it } from 'vitest';
 
@@ -25,6 +26,41 @@ describe('integration: javascript package', () => {
     ]);
 
     expect(results[0]?.errorCount).toBe(0);
+  });
+
+  it('allows console.warn/error without no-undef on node globals', async () => {
+    const config = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: false,
+    });
+
+    const results = await lintFiles(config, [
+      path.join(fixturesRoot, 'js-package/globals.js'),
+    ]);
+
+    const rules = ruleIds(results);
+    expect(rules).not.toContain('no-undef');
+    expect(results[0]?.errorCount).toBe(0);
+  });
+
+  it('applies shared rules to .mjs files', async () => {
+    const config = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: false,
+    });
+
+    const results = await lintFiles(config, [
+      path.join(fixturesRoot, 'js-package/invalid.mjs'),
+    ]);
+
+    const rules = ruleIds(results);
+    expect(rules).toContain('no-console');
+    expect(rules).toContain('no-debugger');
+    expect(results[0]?.errorCount).toBeGreaterThan(1);
   });
 
   it('reports javascript violations without requiring typescript plugin', async () => {
@@ -78,6 +114,24 @@ describe('integration: typescript package', () => {
     expect(rules).toContain('no-console');
     expect(rules).toContain('no-debugger');
     expect(results[0]?.errorCount).toBeGreaterThan(1);
+  });
+
+  it('does not fatal-parse .vue when vue is disabled', async () => {
+    const config = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+    });
+
+    const orphan = path.join(fixturesRoot, 'ts-package/orphan.vue');
+    const eslint = new ESLint({
+      overrideConfigFile: true,
+      overrideConfig: config,
+    });
+
+    // Vue SFCs are ignored when Vue support is off.
+    expect(await eslint.isPathIgnored(orphan)).toBe(true);
   });
 });
 

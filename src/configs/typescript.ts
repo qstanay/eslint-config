@@ -1,4 +1,4 @@
-import { TYPESCRIPT_FILES } from '../utils';
+import { typescriptFiles } from '../utils';
 
 import type { TypedFlatConfigItem } from '../types';
 import type { Linter } from 'eslint';
@@ -12,7 +12,9 @@ function collectRules(configs: TypedFlatConfigItem[]): Linter.RulesRecord {
   );
 }
 
-export async function typescript(): Promise<TypedFlatConfigItem[]> {
+export async function typescript(options: {
+  vue?: boolean;
+} = {}): Promise<TypedFlatConfigItem[]> {
   const parserMod = await import('@typescript-eslint/parser');
   const pluginMod = await import('@typescript-eslint/eslint-plugin');
 
@@ -20,17 +22,20 @@ export async function typescript(): Promise<TypedFlatConfigItem[]> {
   const plugin = (pluginMod as any).default ?? pluginMod;
 
   const recommended = (plugin.configs?.['flat/recommended'] ?? []) as TypedFlatConfigItem[];
+  const vueEnabled = options.vue === true;
 
   return [
     {
       name: 'qstanay/typescript',
-      files: [...TYPESCRIPT_FILES],
+      files: typescriptFiles(vueEnabled),
       languageOptions: {
         parser,
         parserOptions: {
           sourceType: 'module',
           ecmaVersion: 'latest',
-          extraFileExtensions: ['.vue'],
+          ...(vueEnabled
+            ? { extraFileExtensions: ['.vue'] }
+            : {}),
         },
       },
       plugins: {
