@@ -1,5 +1,7 @@
 # @qstanay/eslint-config
 
+[![npm](https://img.shields.io/npm/dm/@qstanay/eslint-config)](https://www.npmjs.com/package/@qstanay/eslint-config)
+
 Opinionated ESLint **flat config** for Nuxt apps, Vue apps, and TypeScript packages.
 
 Formatting is handled by ESLint via **@stylistic** (`eslint --fix`). Do **not** use Prettier alongside this preset unless you disable stylistic rules.
