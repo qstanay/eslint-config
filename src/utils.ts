@@ -30,7 +30,7 @@ const SCRIPT_FILES = [
 
 export const VUE_FILES = ['**/*.vue'] as const;
 
-/** TypeScript sources (`.vue` is added only when Vue is enabled). */
+/** TypeScript sources — never includes `.vue` (Vue keeps its own root parser). */
 export const TYPESCRIPT_FILES = [
   '**/*.{ts,tsx,cts,mts}',
 ] as const;
@@ -43,12 +43,6 @@ export function sourceFiles(vueEnabled: boolean): string[] {
   return vueEnabled
     ? [...SCRIPT_FILES, ...VUE_FILES]
     : [...SCRIPT_FILES];
-}
-
-export function typescriptFiles(vueEnabled: boolean): string[] {
-  return vueEnabled
-    ? [...TYPESCRIPT_FILES, ...VUE_FILES]
-    : [...TYPESCRIPT_FILES];
 }
 
 /** Files that receive shared / override rule packs when Vue is enabled. */

@@ -82,10 +82,11 @@ describe('defineConfig()', () => {
     });
     const typescript = findByName(configs, 'qstanay/typescript');
     expect(typescript.files).toEqual(['**/*.{ts,tsx,cts,mts}']);
-    expect(typescript.languageOptions?.parserOptions?.extraFileExtensions).toBeUndefined();
+    expect(typescript.languageOptions?.parser).toBeTruthy();
+    expect(findByName(configs, 'qstanay/typescript/vue-rules')).toBeUndefined();
   });
 
-  it('attaches typescript parser to .vue when vue is enabled', async () => {
+  it('keeps typescript root parser off .vue when vue is enabled', async () => {
     const configs = await defineConfig({
       stylistic: false,
       vue: true,
@@ -93,8 +94,59 @@ describe('defineConfig()', () => {
       typescript: true,
     });
     const typescript = findByName(configs, 'qstanay/typescript');
-    expect(typescript.files).toContain('**/*.vue');
-    expect(typescript.languageOptions?.parserOptions?.extraFileExtensions).toEqual(['.vue']);
+    expect(typescript.files).toEqual(['**/*.{ts,tsx,cts,mts}']);
+    expect(typescript.files).not.toContain('**/*.vue');
+
+    const vueTsRules = findByName(configs, 'qstanay/typescript/vue-rules');
+    expect(vueTsRules).toBeTruthy();
+    expect(vueTsRules.files).toEqual(['**/*.vue']);
+    expect(vueTsRules.languageOptions?.parser).toBeUndefined();
+    expect(vueTsRules.plugins?.['@typescript-eslint']).toBeTruthy();
+  });
+
+  it('adds browser globals when vue is enabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: true,
+      nuxt: false,
+      typescript: false,
+    });
+    const javascript = findByName(configs, 'qstanay/javascript');
+    expect(javascript.languageOptions?.globals?.document).toBeDefined();
+    expect(javascript.languageOptions?.globals?.window).toBeDefined();
+  });
+
+  it('does not add browser globals when vue is disabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: false,
+    });
+    const javascript = findByName(configs, 'qstanay/javascript');
+    expect(javascript.languageOptions?.globals?.document).toBeUndefined();
+  });
+
+  it('syncs vue/html-indent with stylistic indent', async () => {
+    const configs = await defineConfig({
+      vue: true,
+      nuxt: false,
+      typescript: true,
+      stylistic: { indent: 4 },
+    });
+    const vue = findByName(configs, 'qstanay/vue/rules');
+    expect(vue.rules['vue/html-indent']).toEqual(['error', 4]);
+  });
+
+  it('does not force vue/html-indent when stylistic is disabled', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: true,
+      nuxt: false,
+      typescript: true,
+    });
+    const vue = findByName(configs, 'qstanay/vue/rules');
+    expect(vue.rules['vue/html-indent']).toBeUndefined();
   });
 
   it('uses an explicit options array for vue/padding-line-between-tags', async () => {
@@ -130,8 +182,8 @@ describe('defineConfig()', () => {
       nuxt: false,
       typescript: true,
     });
-    const shared = findByName(defaultConfigs, 'qstanay/shared-rules');
-    expect(shared.rules['@typescript-eslint/no-magic-numbers']).toBeUndefined();
+    const sharedTs = findByName(defaultConfigs, 'qstanay/shared-rules/typescript');
+    expect(sharedTs.rules['@typescript-eslint/no-magic-numbers']).toBeUndefined();
 
     const strictConfigs = await defineConfig({
       stylistic: false,
@@ -140,7 +192,7 @@ describe('defineConfig()', () => {
       typescript: true,
       strict: true,
     });
-    const strictShared = findByName(strictConfigs, 'qstanay/shared-rules');
+    const strictShared = findByName(strictConfigs, 'qstanay/shared-rules/typescript');
     expect(strictShared.rules['@typescript-eslint/no-magic-numbers']).toBeTruthy();
   });
 
@@ -219,6 +271,7 @@ describe('defineConfig()', () => {
       typescript: false,
     });
     const shared = findByName(configs, 'qstanay/shared-rules');
+    expect(findByName(configs, 'qstanay/shared-rules/typescript')).toBeUndefined();
     expect(shared.rules['@typescript-eslint/no-unused-vars']).toBeUndefined();
     expect(shared.rules['no-console']).toBeTruthy();
   });
@@ -254,6 +307,7 @@ describe('nuxt() preset', () => {
 
     const resolved = (await Promise.all(blocks)).flat();
     expect(findByName(resolved, 'qstanay/nuxt/shared-rules')).toBeTruthy();
+    expect(findByName(resolved, 'qstanay/nuxt/shared-rules/typescript')).toBeTruthy();
     expect(findByName(resolved, 'qstanay/vue/rules')).toBeUndefined();
     expect(findByName(resolved, 'qstanay/typescript')).toBeUndefined();
   });
@@ -286,5 +340,14 @@ describe('nuxt() preset', () => {
     const ignoreBlock = findByName(resolved, 'qstanay/ignores');
     expect(ignoreBlock).toBeTruthy();
     expect(ignoreBlock.ignores).toContain('**/tmp/**');
+  });
+
+  it('syncs vue/html-indent with stylistic indent', async () => {
+    const resolved = (await Promise.all(nuxtPreset({
+      stylistic: { indent: 4 },
+    }))).flat();
+
+    const vue = findByName(resolved, 'qstanay/nuxt/vue-rules');
+    expect(vue.rules['vue/html-indent']).toEqual(['error', 4]);
   });
 });

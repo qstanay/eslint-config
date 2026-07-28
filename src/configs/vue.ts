@@ -7,7 +7,9 @@ import type { TypedFlatConfigItem } from '../types';
  * Vue layer based on the official flat recommended preset.
  * Must spread the full array — it includes setup, processor, and rule packs.
  */
-export async function vue(): Promise<TypedFlatConfigItem[]> {
+export async function vue(options: {
+  indent?: 2 | 4;
+} = {}): Promise<TypedFlatConfigItem[]> {
   const vuePluginMod = await import('eslint-plugin-vue');
   const globalsMod = await import('globals');
 
@@ -38,7 +40,7 @@ export async function vue(): Promise<TypedFlatConfigItem[]> {
         },
       },
       rules: {
-        ...vueRules(),
+        ...vueRules({ indent: options.indent }),
       },
     },
   ];

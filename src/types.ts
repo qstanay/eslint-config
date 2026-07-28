@@ -2,7 +2,7 @@ import type { Linter } from 'eslint';
 
 export type Awaitable<T> = T | Promise<T>;
 
-export type TypedFlatConfigItem = Linter.FlatConfig;
+export type TypedFlatConfigItem = Linter.Config;
 
 export interface StylisticOptions {
   indent?: 2 | 4;

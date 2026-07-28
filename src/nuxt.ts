@@ -1,8 +1,17 @@
 import { ignores } from './configs/ignores';
-import { sharedRules } from './configs/shared-rules';
+import {
+  javascriptRules,
+  typescriptRules,
+} from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
+import { loadTypescriptPlugin } from './configs/typescript';
 import { vueRules } from './configs/vue-rules';
-import { resolveStylisticOptions, SOURCE_FILES, VUE_FILES } from './utils';
+import {
+  resolveStylisticOptions,
+  SOURCE_FILES,
+  TYPESCRIPT_FILES,
+  VUE_FILES,
+} from './utils';
 
 import type { StylisticOptions, TypedFlatConfigItem } from './types';
 import type { Linter } from 'eslint';
@@ -29,6 +38,10 @@ export interface NuxtPresetOptions {
  */
 export function nuxt(options: NuxtPresetOptions = {}) {
   const stylisticOptions = resolveStylisticOptions(options.stylistic);
+  const vueIndent = stylisticOptions
+    ? (stylisticOptions.indent ?? 2)
+    : undefined;
+
   const configs: Promise<TypedFlatConfigItem[]>[] = [
     Promise.resolve(ignores(options.ignores)),
   ];
@@ -37,24 +50,34 @@ export function nuxt(options: NuxtPresetOptions = {}) {
     configs.push(stylisticConfig(stylisticOptions));
   }
 
-  configs.push(Promise.resolve([
-    {
-      name: 'qstanay/nuxt/shared-rules',
-      files: [...SOURCE_FILES],
-      // Host (@nuxt/eslint) registers @typescript-eslint; include TS rules.
-      rules: sharedRules({
-        typescript: true,
-        strict: options.strict,
-      }),
-    },
-    {
-      name: 'qstanay/nuxt/vue-rules',
-      files: [...VUE_FILES],
-      rules: {
-        ...vueRules(),
+  configs.push((async () => {
+    // Register plugin explicitly so the preset also works when tested standalone.
+    // In real Nuxt apps `@nuxt/eslint` already provides it (duplicate name is fine).
+    const plugin = await loadTypescriptPlugin();
+
+    return [
+      {
+        name: 'qstanay/nuxt/shared-rules',
+        files: [...SOURCE_FILES],
+        rules: javascriptRules(),
       },
-    },
-  ]));
+      {
+        name: 'qstanay/nuxt/shared-rules/typescript',
+        files: [...TYPESCRIPT_FILES, ...VUE_FILES],
+        plugins: {
+          '@typescript-eslint': plugin,
+        },
+        rules: typescriptRules({ strict: options.strict }),
+      },
+      {
+        name: 'qstanay/nuxt/vue-rules',
+        files: [...VUE_FILES],
+        rules: {
+          ...vueRules({ indent: vueIndent }),
+        },
+      },
+    ];
+  })());
 
   if (options.overrides) {
     // Dedicated trailing block so overrides always win over vue/shared rules.

@@ -151,6 +151,23 @@ describe('integration: vue app', () => {
     expect(results[0]?.errorCount).toBe(0);
   });
 
+  it('allows browser globals in vue app entry files without typescript', async () => {
+    const config = await defineConfig({
+      stylistic: false,
+      vue: true,
+      nuxt: false,
+      typescript: false,
+    });
+
+    const results = await lintFiles(config, [
+      path.join(fixturesRoot, 'vue-vite/browser-entry.js'),
+    ]);
+
+    const rules = ruleIds(results);
+    expect(rules).not.toContain('no-undef');
+    expect(results[0]?.errorCount).toBe(0);
+  });
+
   it('reports vue recommended and opinionated violations in invalid SFC', async () => {
     const config = await defineConfig({
       stylistic: false,

@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.0.4] - 2026-07-27
+
+### Fixed
+
+- Add browser globals when Vue is enabled so `document` / `window` in app entry files do not trip `no-undef` (especially with `typescript: false`)
+- Never use `@typescript-eslint/parser` as the root parser for `.vue`; keep `vue-eslint-parser` as root and apply TS recommended rules via a separate Vue rules block
+- Scope TypeScript shared rules to TS/Vue files only (do not apply `@typescript-eslint/*` to plain JS/MJS)
+- Register `@typescript-eslint` on config objects that reference TS rules so flat config stays valid
+- Sync `vue/html-indent` with `stylistic.indent` in both `defineConfig()` and `nuxt()`
+
+### Changed
+
+- `TypedFlatConfigItem` now aliases `Linter.Config` instead of deprecated `Linter.FlatConfig`
+
 ## [1.0.3] - 2026-07-20
 
 ### Fixed

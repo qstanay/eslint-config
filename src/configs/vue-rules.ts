@@ -1,7 +1,9 @@
 import type { Linter } from 'eslint';
 
-export function vueRules(): Linter.RulesRecord {
-  return {
+export function vueRules(options: {
+  indent?: 2 | 4;
+} = {}): Linter.RulesRecord {
+  const rules: Linter.RulesRecord = {
     'vue/html-self-closing': [
       'error',
       {
@@ -26,4 +28,11 @@ export function vueRules(): Linter.RulesRecord {
       ],
     ],
   };
+
+  if (options.indent !== undefined) {
+    // Keep template indent in sync with @stylistic script indent.
+    rules['vue/html-indent'] = ['error', options.indent];
+  }
+
+  return rules;
 }
