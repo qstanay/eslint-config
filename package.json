@@ -1,6 +1,6 @@
 {
   "name": "@qstanay/eslint-config",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Opinionated ESLint flat config for Nuxt, Vue and TypeScript",
   "type": "module",
   "exports": {
@@ -36,7 +36,8 @@
     "nuxt",
     "vue",
     "typescript",
-    "stylistic"
+    "stylistic",
+    "vitest"
   ],
   "author": "Denis Lapshin",
   "license": "MIT",
@@ -53,10 +54,14 @@
   ],
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0",
-    "typescript": ">=4.9.0"
+    "typescript": ">=4.9.0",
+    "vitest": "*"
   },
   "peerDependenciesMeta": {
     "typescript": {
+      "optional": true
+    },
+    "vitest": {
       "optional": true
     }
   },
@@ -66,6 +71,7 @@
     "@stylistic/eslint-plugin": "^5.10.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/eslint-plugin": "^1.6.26",
     "eslint-config-flat-gitignore": "^2.3.0",
     "eslint-flat-config-utils": "^3.2.0",
     "eslint-plugin-import-x": "^4.0.0",

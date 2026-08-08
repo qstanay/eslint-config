@@ -214,7 +214,7 @@ describe('integration: nuxt preset', () => {
     // Mimics @nuxt/eslint: host provides plugins, our preset only adds rules.
     const config = await concat(
       ...(await typescriptConfig()),
-      ...(await Promise.all(nuxtPreset({ stylistic: false }))),
+      ...(await Promise.all(nuxtPreset({ stylistic: false, test: false }))),
     );
 
     const results = await lintFiles(config, [
@@ -224,6 +224,43 @@ describe('integration: nuxt preset', () => {
     const rules = ruleIds(results);
     expect(rules).toContain('no-console');
     expect(rules).toContain('no-debugger');
+    expect(results[0]?.errorCount).toBeGreaterThan(0);
+  });
+});
+
+describe('integration: vitest', () => {
+  it('lints valid test fixture without errors', async () => {
+    const config = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+      test: true,
+    });
+
+    const results = await lintFiles(config, [
+      path.join(fixturesRoot, 'vitest/valid.test.ts'),
+    ]);
+
+    expect(results[0]?.errorCount).toBe(0);
+  });
+
+  it('reports focused tests and missing expects', async () => {
+    const config = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+      test: true,
+    });
+
+    const results = await lintFiles(config, [
+      path.join(fixturesRoot, 'vitest/invalid.test.ts'),
+    ]);
+
+    const rules = ruleIds(results);
+    expect(rules).toContain('vitest/no-focused-tests');
+    expect(rules).toContain('vitest/expect-expect');
     expect(results[0]?.errorCount).toBeGreaterThan(0);
   });
 });

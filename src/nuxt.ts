@@ -4,9 +4,12 @@ import {
   typescriptRules,
 } from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
+import { test as testConfig } from './configs/test';
 import { loadTypescriptPlugin } from './configs/typescript';
 import { vueRules } from './configs/vue-rules';
 import {
+  has,
+  resolveEnabled,
   resolveStylisticOptions,
   SOURCE_FILES,
   TYPESCRIPT_FILES,
@@ -22,6 +25,11 @@ export interface NuxtPresetOptions {
    * Enable stricter opinionated TypeScript rules (e.g. `no-magic-numbers`).
    */
   strict?: boolean;
+  /**
+   * Enable Vitest rules/globals for test files.
+   * Auto-enabled when `vitest` is installed unless explicitly set.
+   */
+  test?: boolean;
   overrides?: Linter.RulesRecord;
   /**
    * Extra ignores appended to defaults / `.gitignore`.
@@ -38,6 +46,7 @@ export interface NuxtPresetOptions {
  */
 export function nuxt(options: NuxtPresetOptions = {}) {
   const stylisticOptions = resolveStylisticOptions(options.stylistic);
+  const enableTest = resolveEnabled(options.test, has('vitest'));
   const vueIndent = stylisticOptions
     ? (stylisticOptions.indent ?? 2)
     : undefined;
@@ -48,6 +57,10 @@ export function nuxt(options: NuxtPresetOptions = {}) {
 
   if (stylisticOptions) {
     configs.push(stylisticConfig(stylisticOptions));
+  }
+
+  if (enableTest) {
+    configs.push(testConfig());
   }
 
   configs.push((async () => {

@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.1.0] - 2026-08-08
+
+### Added
+
+- Vitest support via `test` option for `defineConfig()` and `nuxt()`
+  - Auto-enabled when `vitest` is installed (`test: false` to disable)
+  - Applies `@vitest/eslint-plugin` recommended rules to common test globs
+  - Declares Vitest globals (`describe`, `it`, `expect`, `vi`, …) for those files
+
 ## [1.0.4] - 2026-07-27
 
 ### Fixed

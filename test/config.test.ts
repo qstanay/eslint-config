@@ -149,6 +149,32 @@ describe('defineConfig()', () => {
     expect(vue.rules['vue/html-indent']).toBeUndefined();
   });
 
+  it('includes vitest config when test: true', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+      test: true,
+    });
+    const test = findByName(configs, 'qstanay/test');
+    expect(test).toBeTruthy();
+    expect(test.plugins?.vitest).toBeTruthy();
+    expect(test.languageOptions?.globals?.describe).toBeDefined();
+    expect(test.rules?.['vitest/no-focused-tests']).toBeTruthy();
+  });
+
+  it('can disable vitest config with test: false', async () => {
+    const configs = await defineConfig({
+      stylistic: false,
+      vue: false,
+      nuxt: false,
+      typescript: true,
+      test: false,
+    });
+    expect(findByName(configs, 'qstanay/test')).toBeUndefined();
+  });
+
   it('uses an explicit options array for vue/padding-line-between-tags', async () => {
     const configs = await defineConfig({
       stylistic: false,
@@ -345,9 +371,21 @@ describe('nuxt() preset', () => {
   it('syncs vue/html-indent with stylistic indent', async () => {
     const resolved = (await Promise.all(nuxtPreset({
       stylistic: { indent: 4 },
+      test: false,
     }))).flat();
 
     const vue = findByName(resolved, 'qstanay/nuxt/vue-rules');
     expect(vue.rules['vue/html-indent']).toEqual(['error', 4]);
+  });
+
+  it('includes vitest config when test: true', async () => {
+    const resolved = (await Promise.all(nuxtPreset({
+      stylistic: false,
+      test: true,
+    }))).flat();
+
+    const test = findByName(resolved, 'qstanay/test');
+    expect(test).toBeTruthy();
+    expect(test.plugins?.vitest).toBeTruthy();
   });
 });

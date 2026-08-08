@@ -9,6 +9,7 @@ import {
   typescriptRules,
 } from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
+import { test as testConfig } from './configs/test';
 import {
   loadTypescriptPlugin,
   typescript as typescriptConfig,
@@ -35,6 +36,7 @@ export function defineConfig(
   const enableTs = resolveEnabled(options.typescript, has('typescript'));
   const enableVue = resolveEnabled(options.vue, has('vue') || has('nuxt'));
   const enableNuxt = resolveEnabled(options.nuxt, has('nuxt'));
+  const enableTest = resolveEnabled(options.test, has('vitest'));
   const stylisticOptions = resolveStylisticOptions(options.stylistic);
   const files = sourceFiles(enableVue);
   const vueIndent = stylisticOptions
@@ -66,6 +68,10 @@ export function defineConfig(
 
   if (enableNuxt) {
     configs.push(nuxtConfig());
+  }
+
+  if (enableTest) {
+    configs.push(testConfig());
   }
 
   configs.push(Promise.resolve([

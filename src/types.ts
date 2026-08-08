@@ -29,6 +29,11 @@ export interface OptionsConfig {
    * Off by default to keep app/UI code quiet.
    */
   strict?: boolean;
+  /**
+   * Enable Vitest rules/globals for test files.
+   * Auto-enabled when `vitest` is installed unless explicitly set.
+   */
+  test?: boolean;
   stylistic?: boolean | StylisticOptions;
   /**
    * Extra ignores appended to defaults.

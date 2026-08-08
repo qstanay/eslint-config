@@ -139,6 +139,7 @@ Main entry for Vue / TypeScript projects.
 | `vue` | `boolean` | auto (`vue` or `nuxt` installed) | Enable Vue rules |
 | `typescript` | `boolean` | auto (`typescript` installed) | Enable TypeScript rules |
 | `nuxt` | `boolean` | auto (`nuxt` installed) | Enable Nuxt plugin rule(s). Prefer `/nuxt` for Nuxt apps |
+| `test` | `boolean` | auto (`vitest` installed) | Enable Vitest rules/globals for test files |
 | `strict` | `boolean` | `false` | Stricter TS rules (e.g. `no-magic-numbers`) |
 | `stylistic` | `false \| object` | enabled | Formatting rules (see below) |
 | `overrides` | `Linter.RulesRecord` | `{}` | Custom rules merged last over shared rules |
@@ -165,11 +166,28 @@ Layer for Nuxt apps used with `withNuxt(...nuxt())`.
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `stylistic` | `false \| object` | enabled | Formatting rules (see below) |
+| `test` | `boolean` | auto (`vitest` installed) | Enable Vitest rules/globals for test files |
 | `strict` | `boolean` | `false` | Stricter TS rules (e.g. `no-magic-numbers`) |
 | `overrides` | `Linter.RulesRecord` | `{}` | Custom rules merged last over shared rules |
 | `ignores` | `string[]` | `[]` | Extra ignore globs (plus defaults / `.gitignore`) |
 
-There are no `vue` / `typescript` flags here — `@nuxt/eslint` already provides that stack. This preset adds shared opinionated rules, Vue opinionated rules, and stylistic formatting.
+There are no `vue` / `typescript` flags here — `@nuxt/eslint` already provides that stack. This preset adds shared opinionated rules, Vue opinionated rules, stylistic formatting, and optional Vitest support.
+
+### `test` (Vitest)
+
+Auto-enabled when `vitest` is installed. Applies to common test globs:
+
+- `**/*.{test,spec}.{js,ts,…}`
+- `**/__tests__/**`
+- `**/tests/**`, `**/test/**`
+
+Includes `@vitest/eslint-plugin` recommended rules and Vitest globals (`describe`, `it`, `expect`, `vi`, …).
+
+```js
+defineConfig({ test: true })
+// or disable even if vitest is installed:
+defineConfig({ test: false })
+```
 
 ### `stylistic`
 
@@ -290,6 +308,7 @@ Disable Prettier for the same file types (or uninstall / disable the Prettier ex
 - Import hygiene + autofixable `import/order` via `eslint-plugin-import-x` in `defineConfig` (Nuxt relies on `@nuxt/eslint` for its own import/TS/Vue stack)
 - `overrides` are applied in a trailing config block so they win over shared/Vue rules
 - Optional `strict: true` for noisier TypeScript checks like `no-magic-numbers`
+- Optional Vitest layer (`test`, auto when `vitest` is installed): recommended rules + test globals
 
 ## Agent / setup checklist
 
