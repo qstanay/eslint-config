@@ -332,8 +332,12 @@ describe('nuxt() preset', () => {
     expect(blocks.length).toBeGreaterThan(0);
 
     const resolved = (await Promise.all(blocks)).flat();
+    const sharedTs = findByName(resolved, 'qstanay/nuxt/shared-rules/typescript');
+    const vueRules = findByName(resolved, 'qstanay/nuxt/vue-rules');
     expect(findByName(resolved, 'qstanay/nuxt/shared-rules')).toBeTruthy();
-    expect(findByName(resolved, 'qstanay/nuxt/shared-rules/typescript')).toBeTruthy();
+    expect(sharedTs).toBeTruthy();
+    expect(sharedTs.plugins?.['@typescript-eslint']).toBeUndefined();
+    expect(vueRules.plugins?.vue).toBeUndefined();
     expect(findByName(resolved, 'qstanay/vue/rules')).toBeUndefined();
     expect(findByName(resolved, 'qstanay/typescript')).toBeUndefined();
   });

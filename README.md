@@ -171,7 +171,7 @@ Layer for Nuxt apps used with `withNuxt(...nuxt())`.
 | `overrides` | `Linter.RulesRecord` | `{}` | Custom rules merged last over shared rules |
 | `ignores` | `string[]` | `[]` | Extra ignore globs (plus defaults / `.gitignore`) |
 
-There are no `vue` / `typescript` flags here — `@nuxt/eslint` already provides that stack. This preset adds shared opinionated rules, Vue opinionated rules, stylistic formatting, and optional Vitest support.
+There are no `vue` / `typescript` flags here — `@nuxt/eslint` already provides that stack. This preset adds shared opinionated rules, Vue opinionated rules, stylistic formatting, and optional Vitest support. It does **not** register `@typescript-eslint` or `vue` plugins; a second copy of `@typescript-eslint` would make ESLint reject the config.
 
 ### `test` (Vitest)
 

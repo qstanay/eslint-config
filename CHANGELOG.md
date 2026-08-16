@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.1.1] - 2026-08-16
+
+### Fixed
+
+- `/nuxt` no longer registers its own `@typescript-eslint` plugin. It only adds rules on top of the plugin from `@nuxt/eslint`, so consumers do not need pnpm/npm `overrides` to avoid “two instances of plugin `@typescript-eslint`”.
+
 ## [1.1.0] - 2026-08-08
 
 ### Added

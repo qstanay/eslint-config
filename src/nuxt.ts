@@ -5,7 +5,6 @@ import {
 } from './configs/shared-rules';
 import { stylistic as stylisticConfig } from './configs/stylistic';
 import { test as testConfig } from './configs/test';
-import { loadTypescriptPlugin } from './configs/typescript';
 import { vueRules } from './configs/vue-rules';
 import {
   has,
@@ -63,34 +62,28 @@ export function nuxt(options: NuxtPresetOptions = {}) {
     configs.push(testConfig());
   }
 
-  configs.push((async () => {
-    // Register plugin explicitly so the preset also works when tested standalone.
-    // In real Nuxt apps `@nuxt/eslint` already provides it (duplicate name is fine).
-    const plugin = await loadTypescriptPlugin();
-
-    return [
-      {
-        name: 'qstanay/nuxt/shared-rules',
-        files: [...SOURCE_FILES],
-        rules: javascriptRules(),
+  // Rules only — do not register `@typescript-eslint` / `vue`.
+  // `@nuxt/eslint` already provides those plugins; a second instance
+  // (common with pnpm) makes ESLint reject the config.
+  configs.push(Promise.resolve([
+    {
+      name: 'qstanay/nuxt/shared-rules',
+      files: [...SOURCE_FILES],
+      rules: javascriptRules(),
+    },
+    {
+      name: 'qstanay/nuxt/shared-rules/typescript',
+      files: [...TYPESCRIPT_FILES, ...VUE_FILES],
+      rules: typescriptRules({ strict: options.strict }),
+    },
+    {
+      name: 'qstanay/nuxt/vue-rules',
+      files: [...VUE_FILES],
+      rules: {
+        ...vueRules({ indent: vueIndent }),
       },
-      {
-        name: 'qstanay/nuxt/shared-rules/typescript',
-        files: [...TYPESCRIPT_FILES, ...VUE_FILES],
-        plugins: {
-          '@typescript-eslint': plugin,
-        },
-        rules: typescriptRules({ strict: options.strict }),
-      },
-      {
-        name: 'qstanay/nuxt/vue-rules',
-        files: [...VUE_FILES],
-        rules: {
-          ...vueRules({ indent: vueIndent }),
-        },
-      },
-    ];
-  })());
+    },
+  ]));
 
   if (options.overrides) {
     // Dedicated trailing block so overrides always win over vue/shared rules.
