@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.2.0] - 2026-11-08
+
+### Added
+
+- Document how to set a 4-space indent in a consuming project via `stylistic.indent` for both `defineConfig()` and `nuxt()`. The preset default stays 2 spaces, and `vue/html-indent` follows the same value.
+
 ## [1.1.1] - 2026-08-16
 
 ### Fixed
