@@ -211,6 +211,37 @@ defineConfig({
 })
 ```
 
+The preset default stays **2 spaces**. A project can switch to 4 without changing this package. Allowed values are `2` and `4`. `vue/html-indent` follows the same value.
+
+Vue or TypeScript package:
+
+```js
+import { defineConfig } from '@qstanay/eslint-config'
+
+export default defineConfig({
+  stylistic: {
+    indent: 4,
+  },
+})
+```
+
+Nuxt:
+
+```js
+import withNuxt from './.nuxt/eslint.config.mjs'
+import { nuxt } from '@qstanay/eslint-config/nuxt'
+
+export default withNuxt(
+  ...nuxt({
+    stylistic: {
+      indent: 4,
+    },
+  }),
+)
+```
+
+Then run `eslint . --fix` in that project.
+
 Disable formatting rules entirely:
 
 ```js
